@@ -13,9 +13,11 @@ app/.cxx/
 /.idea/
 *.iml
 
-# APK
+# APK and AAB (release builds - generated locally)
 *.apk
-!/AILocal-*.apk
+*.aab
+/release/
+/release/
 
 # Logs
 *.log
