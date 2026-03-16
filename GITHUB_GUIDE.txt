@@ -1,0 +1,66 @@
+# Guía de GitHub - AILocal
+
+## Repositorio
+- **URL**: https://github.com/cryptocoachmain/asistente-ia-local
+
+## Credenciales de Firma (Signing)
+- **Keystore**: DNKLabs.jks (en raíz del proyecto)
+- **Password**: DNK420dnk
+- **Alias**: dnkkey
+- **Password del Alias**: DNK420dnk
+
+## Crear Nueva Release (Paso a Paso)
+
+### 1. Actualizar versión en código
+- `app/build.gradle.kts` - versión en defaultConfig
+- `app/src/main/res/values/strings.xml` - versión visible al usuario
+- Cualquier archivo Kotlin que muestre la versión
+
+### 2. Compilar APK Firmado
+```bash
+./gradlew assembleRelease
+```
+El APK se genera en: `release/AIlocal-1_X_Y.apk`
+
+### 3. Hacer commit y push
+```bash
+git add -A
+git commit -m "Version X.Y.Z - cambios"
+git push origin main
+```
+
+### 4. Crear tag y push
+```bash
+git tag vX.Y.Z
+git push origin vX.Y.Z
+```
+
+### 5. Crear Release via API GitHub
+```bash
+# Crear release
+curl -s -X POST https://api.github.com/repos/cryptocoachmain/asistente-ia-local/releases \
+  -H "Authorization: token TU_TOKEN_GITHUB" \
+  -H "Content-Type: application/json" \
+  -d '{"tag_name":"vX.Y.Z","name":"Version X.Y.Z","body":"Notas del release","draft":false}'
+
+# Subir APK (reemplazar RELEASE_ID)
+curl -s -X POST "https://uploads.github.com/repos/cryptocoachmain/asistente-ia-local/releases/RELEASE_ID/assets?name=AIlocal-X.Y.Z.apk" \
+  -H "Authorization: token TU_TOKEN_GITHUB" \
+  -H "Content-Type: application/vnd.android.package-archive" \
+  --data-binary @release/AIlocal-1_X_Y.apk
+```
+
+## Configurar CI/CD (GitHub Actions)
+
+Para builds automáticos, agregar estos secrets en GitHub:
+- **KEYSTORE_BASE64**: Base64 del keystore (cat DNKLabs.jks | base64)
+- **KEYSTORE_PASSWORD**: DNK420dnk
+- **KEYSTORE_ALIAS**: dnkkey
+- **KEYSTORE_ALIAS_PASSWORD**: DNK420dnk
+- **GITHUB_TOKEN**: Se genera automáticamente
+
+## Notas Importantes
+
+- NO hacer commit de archivos grandes (.cxx/, build/, *.a, *.apk excepto en /release/)
+- El .gitignore ya está configurado para excluir estos archivos
+- El workflow de GitHub Actions ya está configurado en .github/workflows/release.yml
