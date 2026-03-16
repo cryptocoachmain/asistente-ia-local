@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
 import androidx.core.content.FileProvider
@@ -29,10 +30,11 @@ class UpdateRepository(private val context: Context) {
         private const val APK_MIME = "application/vnd.android.package-archive"
     }
 
-    private fun getActivityContext(): Context {
-        var ctx = context
-        while (ctx !is Activity && ctx is android.content.ContextWrapper) {
-            ctx = ctx.baseContext
+    private fun findActivityContext(ctx: Context): Context {
+        var context = ctx
+        while (context is android.content.ContextWrapper) {
+            if (context is Activity) return context
+            context = context.baseContext
         }
         return ctx
     }
@@ -73,49 +75,66 @@ class UpdateRepository(private val context: Context) {
     }
 
     suspend fun downloadAndInstall(updateInfo: UpdateInfo) = withContext(Dispatchers.IO) {
-        val activityContext = getActivityContext()
+        val activityContext = findActivityContext(context)
         
-        val url = URL(updateInfo.downloadUrl)
-        val connection = (url.openConnection() as HttpURLConnection).apply {
-            connectTimeout = 20000
-            readTimeout = 30000
-        }
-
-        val apkFile = File(context.cacheDir, updateInfo.assetName)
-        connection.inputStream.use { input ->
-            FileOutputStream(apkFile).use { output ->
-                input.copyTo(output)
-            }
-        }
-
         try {
+            val url = URL(updateInfo.downloadUrl)
+            val connection = (url.openConnection() as HttpURLConnection).apply {
+                connectTimeout = 20000
+                readTimeout = 30000
+            }
+
+            val apkFile = File(context.cacheDir, updateInfo.assetName)
+            connection.inputStream.use { input ->
+                FileOutputStream(apkFile).use { output ->
+                    input.copyTo(output)
+                }
+            }
+
             val apkUri: Uri = FileProvider.getUriForFile(
                 context,
                 "${context.packageName}.fileprovider",
                 apkFile
             )
 
-            val installIntent = Intent(Intent.ACTION_VIEW).apply {
-                data = apkUri
-                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
-                setType(APK_MIME)
-            }
-
-            val canInstall = context.packageManager.canRequestPackageInstalls()
-            if (canInstall) {
-                activityContext.startActivity(installIntent)
-            } else {
-                val settingsIntent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
-                    data = Uri.parse("package:${context.packageName}")
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            withContext(Dispatchers.Main) {
+                try {
+                    val installIntent = Intent(Intent.ACTION_VIEW).apply {
+                        setDataAndType(apkUri, APK_MIME)
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    
+                    activityContext.startActivity(installIntent)
+                } catch (e: Exception) {
+                    // Si falla, intentar abrir configuración de-apps desconcidas
+                    try {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            val settingsIntent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
+                                data = Uri.parse("package:${context.packageName}")
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            activityContext.startActivity(settingsIntent)
+                        } else {
+                            val settingsIntent = Intent(Settings.ACTION_SECURITY_SETTINGS).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            activityContext.startActivity(settingsIntent)
+                        }
+                    } catch (e2: Exception) {
+                        Toast.makeText(
+                            context,
+                            "Error al instalar. Por favor descarga el APK manualmente.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
-                activityContext.startActivity(settingsIntent)
             }
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     context,
-                    "Error al instalar: ${e.message}. Descarga el APK manualmente.",
+                    "Error al descargar: ${e.message}",
                     Toast.LENGTH_LONG
                 ).show()
             }
