@@ -1,0 +1,41 @@
+# C++ build artifacts
+app/.cxx/
+
+# Build outputs
+/build/
+/app/build/
+
+# Gradle
+/.gradle/
+/gradle/wrapper/
+
+# IDE
+/.idea/
+*.iml
+
+# APK
+*.apk
+!/AILocal-*.apk
+
+# Logs
+*.log
+build_log*.txt
+compile_errors.txt
+
+# Heap snapshots
+*.heapsnapshot
+
+# Video
+*.mp4
+
+# Images
+*.png
+
+# Secrets (keep these local)
+keystore_password.txt
+
+# Llama.cpp (too large to commit)
+app/src/main/cpp/llama.cpp/
+
+# Null file
+nul

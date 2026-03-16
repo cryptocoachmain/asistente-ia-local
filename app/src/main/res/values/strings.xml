@@ -1,0 +1,123 @@
+<resources>
+    <string name="app_name">Asistente de IA Local</string>
+    <string name="app_version">v1.3.1</string>
+    <string name="developer">DNK Labs - Diego Martinez</string>
+    
+    <!-- Pantalla de bloqueo -->
+    <string name="lock_title">Introduce tu PIN</string>
+    <string name="lock_subtitle">Accede a tus conversaciones privadas</string>
+    <string name="lock_attempts_remaining">Intentos restantes: %d</string>
+    <string name="lock_locked_out">Bloqueado. Espera %d segundos</string>
+    <string name="lock_fingerprint">Usar huella dactilar</string>
+    
+    <!-- Onboarding -->
+    <string name="welcome_title">Asistente de IA Local</string>
+    <string name="welcome_subtitle">100%% Offline • 100%% Privado</string>
+    <string name="welcome_point1">🔒 Privacidad total: Tus datos nunca salen de tu dispositivo</string>
+    <string name="welcome_point2">📡 Sin internet: Funciona completamente offline</string>
+    <string name="welcome_point3">🛡️ Sin trackers: Sin cuentas, sin suscripciones, sin spyware</string>
+    <string name="welcome_button">Comenzar configuración</string>
+    
+    <!-- Privacidad -->
+    <string name="privacy_title">Tu Privacidad es Real</string>
+    <string name="privacy_verified">🔒 Verificado 100%% Offline</string>
+    <string name="privacy_stats">0 bytes enviados a la nube</string>
+    <string name="privacy_scan">Escanea esta app con tu antivirus para verificarlo</string>
+    <string name="privacy_button">Continuar</string>
+    
+    <!-- Configuración PIN -->
+    <string name="pin_setup_title">Configura tu PIN</string>
+    <string name="pin_setup_warning">⚠️ IMPORTANTE</string>
+    <string name="pin_setup_description">Si olvidas tu PIN, perderás todas las conversaciones PERMANENTEMENTE. No hay forma de recuperarlas.\n\nUsa un número que puedas recordar fácilmente (cumpleaños modificado, DNI sin letra, etc.)</string>
+    <string name="pin_enter">Introduce PIN (4-6 dígitos)</string>
+    <string name="pin_confirm">Confirma PIN</string>
+    <string name="pin_error_length">El PIN debe tener 4-6 dígitos</string>
+    <string name="pin_error_match">Los PINs no coinciden</string>
+    <string name="pin_button_setup">Establecer PIN</string>
+    
+    <!-- Modelos -->
+    <string name="model_select_title">Selecciona tu Modelo de IA</string>
+    <string name="model_select_subtitle">Elige al menos un modelo para empezar</string>
+    <string name="model_05b_title">Qwen 2.5 0.5B</string>
+    <string name="model_05b_desc">~400 MB • ⚡ Ultra rápido • 🎯 Precisión básica</string>
+    <string name="model_15b_title">Qwen 2.5 1.5B (Recomendado)</string>
+    <string name="model_15b_desc">~1 GB • ⚡ Rápido • 🎯 Buena precisión</string>
+    <string name="model_3b_title">Qwen 2.5 3B</string>
+    <string name="model_3b_desc">~1.9 GB • ⚡ Normal • 🎯 Excelente precisión</string>
+    <string name="model_space">Espacio libre: %s</string>
+    <string name="model_download">Descargar e Instalar</string>
+    <string name="model_downloading">Descargando… %d%%</string>
+    <string name="model_installed">✓ Instalado</string>
+    
+    <!-- Chat -->
+    <string name="chat_title">Asistente IA</string>
+    <string name="chat_privacy_badge">🔒 Privado</string>
+    <string name="chat_hint">Escribe tu pregunta…</string>
+    <string name="chat_send">Enviar</string>
+    <string name="chat_speak">Escuchar respuesta</string>
+    <string name="chat_share">Compartir</string>
+    <string name="chat_copy">Copiar</string>
+    <string name="chat_typing">Generando respuesta…</string>
+    <string name="chat_time">⏱️ %ss / Estimado: %ss</string>
+    <string name="chat_incognito">🔒 Modo incógnito activo - Esta conversación no se guardará</string>
+    <string name="chat_history">Historial</string>
+    <string name="chat_camera">Cámara OCR</string>
+    <string name="chat_pdf">PDF OCR</string>
+    <string name="chat_settings">Ajustes</string>
+    
+    <!-- OCR -->
+    <string name="ocr_camera_title">Capturar Texto</string>
+    <string name="ocr_camera_hint">Enfoca el texto a capturar</string>
+    <string name="ocr_pdf_title">Seleccionar PDF</string>
+    <string name="ocr_processing">Procesando…</string>
+    <string name="ocr_limit_title">⚠️ Límite de tokens</string>
+    <string name="ocr_limit_message">Este modelo tiene capacidad limitada (%d tokens).\nEl texto tiene %d caracteres.\nSe procesarán los primeros %d tokens (~%d palabras).</string>
+    <string name="ocr_process">Procesar texto</string>
+    <string name="ocr_cancel">Cancelar</string>
+    <string name="ocr_lot">Lote %d/%d (págs %d-%d)</string>
+    
+    <!-- Historial -->
+    <string name="history_title">Historial de Conversaciones</string>
+    <string name="history_empty">No hay conversaciones guardadas</string>
+    <string name="history_incognito">🔒 Incógnito</string>
+    <string name="history_messages">%d mensajes</string>
+    <string name="history_delete_all">Eliminar todo el historial</string>
+    <string name="history_confirm_title">¿Eliminar todo?</string>
+    <string name="history_confirm_message">Esta acción eliminará todas las conversaciones de forma permanente.</string>
+    <string name="history_delete">Eliminar todo</string>
+    <string name="history_cancel">Cancelar</string>
+    
+    <!-- Ajustes -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_models">Modelos de IA</string>
+    <string name="settings_parameters">Parámetros de Generación</string>
+    <string name="settings_temperature">Temperatura</string>
+    <string name="settings_temperature_desc">Controla creatividad vs determinismo</string>
+    <string name="settings_max_tokens">Máximo de tokens</string>
+    <string name="settings_top_p">Top P</string>
+    <string name="settings_context">Ventana de contexto</string>
+    <string name="settings_tts">Texto a Voz</string>
+    <string name="settings_tts_enabled">Activar TTS</string>
+    <string name="settings_tts_speed">Velocidad: %.1fx</string>
+    <string name="settings_privacy">Privacidad</string>
+    <string name="settings_change_pin">Cambiar PIN</string>
+    <string name="settings_delete_history">Borrar historial</string>
+    <string name="settings_verify">Verificación de privacidad</string>
+    <string name="settings_stats">Conversaciones: %d | Mensajes: %d | 0 bytes enviados</string>
+    <string name="settings_battery">Optimización de batería</string>
+    <string name="settings_battery_desc">La app puede ser cerrada por el sistema. Desactiva la optimización para mejor rendimiento.</string>
+    <string name="settings_battery_button">Abrir configuración</string>
+    
+    <!-- Compartir -->
+    <string name="share_title">Compartir respuesta</string>
+    <string name="share_via">Compartir vía</string>
+    <string name="share_footer">\n---\nGenerado 100%% offline por Asistente de IA Local\nPrivacidad garantizada | Sin conexión a internet</string>
+    
+    <!-- Errores -->
+    <string name="error_generic">Error: %s</string>
+    <string name="error_no_model">No hay modelo instalado. Ve a Ajustes → Modelos.</string>
+    <string name="error_context_limit">El texto es demasiado largo para el modelo actual.</string>
+    <string name="error_ocr">Error al procesar imagen: %s</string>
+    <string name="error_pdf">Error al procesar PDF: %s</string>
+    
+</resources>
