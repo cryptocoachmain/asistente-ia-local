@@ -56,6 +56,8 @@ import com.dnklabs.asistenteialocal.ui.components.AppPermissions
 import com.dnklabs.asistenteialocal.ui.theme.LocalPrivacyGreen
 import kotlinx.coroutines.launch
 import com.dnklabs.asistenteialocal.data.ocr.OCRService
+import com.dnklabs.asistenteialocal.data.repository.UpdateRepository
+import com.dnklabs.asistenteialocal.data.repository.UpdateInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -115,6 +117,36 @@ fun ChatScreen(
     
     val transcribedText by viewModel.transcribedText.collectAsState()
     val ramWarning by viewModel.ramWarning.collectAsState()
+
+    // Version update status
+    var latestVersion by remember { mutableStateOf<String?>(null) }
+    var isUpdateAvailable by remember { mutableStateOf(false) }
+    var isCheckingUpdate by remember { mutableStateOf(false) }
+
+    // Check for updates on first composition
+    LaunchedEffect(Unit) {
+        isCheckingUpdate = true
+        try {
+            val updateRepo = UpdateRepository(context)
+            val currentVersion = try {
+                context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "1.0.0"
+            } catch (e: Exception) {
+                "1.0.0"
+            }
+            val updateInfo = updateRepo.checkForUpdate(currentVersion)
+            if (updateInfo != null) {
+                latestVersion = updateInfo.versionName
+                isUpdateAvailable = true
+            } else {
+                isUpdateAvailable = false
+            }
+        } catch (e: Exception) {
+            // Silently fail - don't bother user
+            isUpdateAvailable = false
+        } finally {
+            isCheckingUpdate = false
+        }
+    }
 
     val promptText = remember(messageText, attachedFileContext) {
         buildString {
@@ -466,12 +498,40 @@ fun ChatScreen(
                             style = MaterialTheme.typography.bodySmall,
                             fontSize = 12.sp
                         )
-                        Text(
-                            text = "100% Offline • v1.3.1",
-                            style = MaterialTheme.typography.bodySmall,
-                            fontSize = 10.sp,
-                            color = LocalPrivacyGreen
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = "100% Offline • v1.3.2",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontSize = 10.sp,
+                                color = LocalPrivacyGreen
+                            )
+                            if (isCheckingUpdate) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(10.dp),
+                                    strokeWidth = 1.dp,
+                                    color = LocalPrivacyGreen
+                                )
+                            } else if (isUpdateAvailable && latestVersion != null) {
+                                Text(
+                                    text = "• Nueva Versión $latestVersion",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontSize = 10.sp,
+                                    color = Color(0xFFE53935),
+                                    fontWeight = FontWeight.Bold
+                                )
+                            } else {
+                                Text(
+                                    text = "• Actualizado",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontSize = 10.sp,
+                                    color = Color(0xFF43A047),
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
                     }
                 },
                 actions = {
