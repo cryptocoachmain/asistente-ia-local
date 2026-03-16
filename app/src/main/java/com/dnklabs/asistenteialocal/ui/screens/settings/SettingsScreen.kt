@@ -206,9 +206,11 @@ fun SettingsScreen(
                                     val updateInfo = updateRepository.checkForUpdate(currentVersionName)
                                     
                                     if (updateInfo != null) {
-                                        localUpdateStatus = "Nueva versión ${updateInfo.versionName} encontrada. Descargando..."
-                                        updateRepository.downloadAndInstall(updateInfo)
-                                        localUpdateStatus = "Descargando e instalando..."
+                                        localUpdateStatus = "Nueva versión ${updateInfo.versionName}. Descargando..."
+                                        val success = updateRepository.downloadAndInstall(updateInfo)
+                                        if (success) {
+                                            localUpdateStatus = "Listo. Busca el APK en Descargas."
+                                        }
                                     } else {
                                         localUpdateStatus = "Ya tienes la última versión"
                                     }
@@ -868,8 +870,10 @@ fun SettingsScreen(
                                     val updateInfo = updateRepo.checkForUpdate(currentVersion ?: "1.0.0")
                                     
                                     if (updateInfo != null) {
-                                        updateRepo.downloadAndInstall(updateInfo)
-                                        updateStatus = "Descargando versión ${updateInfo.versionName}..."
+                                        val success = updateRepo.downloadAndInstall(updateInfo)
+                                        if (success) {
+                                            updateStatus = "Listo. Busca el APK en Descargas."
+                                        }
                                     } else {
                                         updateStatus = "Ya tienes la última versión"
                                     }
