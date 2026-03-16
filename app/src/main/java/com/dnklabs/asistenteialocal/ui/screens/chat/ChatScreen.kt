@@ -503,7 +503,7 @@ fun ChatScreen(
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Text(
-                                text = "100% Offline • v1.3.2",
+                                text = "100% Offline • v1.3.3",
                                 style = MaterialTheme.typography.bodySmall,
                                 fontSize = 10.sp,
                                 color = LocalPrivacyGreen
@@ -982,6 +982,7 @@ fun ChatScreen(
                         MessageBubble(
                             message = message,
                             isLastMessage = message == messages.last(),
+                            modelName = selectedModel ?: "Qwen",
                             onShare = { viewModel.shareMessage(context, message.content) },
                             onCopy = { viewModel.copyToClipboard(context, message.content) }
                         )
@@ -1372,6 +1373,7 @@ private fun TokenLimitDialog(
  private fun MessageBubble(
     message: ChatMessageDisplay,
     isLastMessage: Boolean,
+    modelName: String = "",
     onShare: () -> Unit = {},
     onCopy: () -> Unit = {}
 ) {
@@ -1381,6 +1383,27 @@ private fun TokenLimitDialog(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = if (isUser) Alignment.End else Alignment.Start
     ) {
+        // Mostrar modelo a la izquierda (solo para mensajes del asistente y solo en el primer mensaje)
+        if (!isUser && isLastMessage && modelName.isNotBlank()) {
+            Row(
+                modifier = Modifier.padding(bottom = 4.dp, start = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ModelTraining,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(14.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "Modelo: $modelName",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+        
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start,
