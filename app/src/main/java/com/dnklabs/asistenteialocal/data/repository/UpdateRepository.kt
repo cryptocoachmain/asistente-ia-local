@@ -1,6 +1,7 @@
 package com.dnklabs.asistenteialocal.data.repository
 
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -8,7 +9,6 @@ import android.os.Build
 import android.os.Environment
 import android.provider.Settings
 import android.widget.Toast
-import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -87,40 +87,68 @@ class UpdateRepository(private val context: Context) {
                 setRequestProperty("User-Agent", "Asistente-IA-Local")
             }
 
-            // Save to Downloads folder instead of cache
-            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            if (!downloadsDir.exists()) downloadsDir.mkdirs()
-            
-            val apkFile = File(downloadsDir, "AILocal-${updateInfo.versionName}.apk")
-            
-            connection.inputStream.use { input ->
-                FileOutputStream(apkFile).use { output ->
-                    val buffer = ByteArray(8192)
-                    var bytesRead: Int
-                    while (input.read(buffer).also { bytesRead = it } != -1) {
-                        output.write(buffer, 0, bytesRead)
+            val apkFileName = "AILocal-${updateInfo.versionName}.apk"
+            var apkUri: Uri? = null
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Use MediaStore for Android 10+
+                val contentValues = ContentValues().apply {
+                    put(android.provider.MediaStore.Downloads.DISPLAY_NAME, apkFileName)
+                    put(android.provider.MediaStore.Downloads.MIME_TYPE, "application/vnd.android.package-archive")
+                    put(android.provider.MediaStore.Downloads.IS_PENDING, 1)
+                }
+
+                val resolver = context.contentResolver
+                apkUri = resolver.insert(android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+
+                apkUri?.let { uri ->
+                    resolver.openOutputStream(uri)?.use { output ->
+                        connection.inputStream.use { input ->
+                            val buffer = ByteArray(8192)
+                            var bytesRead: Int
+                            while (input.read(buffer).also { bytesRead = it } != -1) {
+                                output.write(buffer, 0, bytesRead)
+                            }
+                        }
+                    }
+
+                    contentValues.clear()
+                    contentValues.put(android.provider.MediaStore.Downloads.IS_PENDING, 0)
+                    resolver.update(uri, contentValues, null, null)
+                }
+            } else {
+                // Legacy storage for older Android
+                val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                if (!downloadsDir.exists()) downloadsDir.mkdirs()
+                
+                val apkFile = File(downloadsDir, apkFileName)
+                
+                connection.inputStream.use { input ->
+                    FileOutputStream(apkFile).use { output ->
+                        val buffer = ByteArray(8192)
+                        var bytesRead: Int
+                        while (input.read(buffer).also { bytesRead = it } != -1) {
+                            output.write(buffer, 0, bytesRead)
+                        }
                     }
                 }
+                apkUri = Uri.fromFile(apkFile)
             }
 
             withContext(Dispatchers.Main) {
-                try {
-                    val uri = Uri.fromFile(apkFile)
-                    val installIntent = Intent(Intent.ACTION_VIEW).apply {
-                        setDataAndType(uri, "application/vnd.android.package-archive")
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    }
-                    
-                    if (installIntent.resolveActivity(context.packageManager) != null) {
+                if (apkUri != null) {
+                    try {
+                        val installIntent = Intent(Intent.ACTION_VIEW).apply {
+                            setDataAndType(apkUri, "application/vnd.android.package-archive")
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
                         context.startActivity(installIntent)
-                    } else {
-                        // Fallback: open Downloads
-                        openDownloads(context)
-                        Toast.makeText(context, "Descarga completada: ${apkFile.name}. Busca el archivo en Descargas e instálalo.", Toast.LENGTH_LONG).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Error al instalar. Busca $apkFileName en Descargas.", Toast.LENGTH_LONG).show()
                     }
-                } catch (e: Exception) {
-                    openDownloads(context)
-                    Toast.makeText(context, "Descarga completada: ${apkFile.name}. Busca el archivo en Descargas e instálalo.", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(context, "Error al guardar el APK.", Toast.LENGTH_LONG).show()
                 }
             }
             true
@@ -129,18 +157,6 @@ class UpdateRepository(private val context: Context) {
                 Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_LONG).show()
             }
             false
-        }
-    }
-
-    private fun openDownloads(context: Context) {
-        try {
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                setType("application/vnd.android.package-archive")
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            context.startActivity(Intent.createChooser(intent, "Abrir descargas"))
-        } catch (e: Exception) {
-            // Ignore
         }
     }
 }
