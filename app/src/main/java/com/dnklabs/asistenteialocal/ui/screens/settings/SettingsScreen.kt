@@ -58,8 +58,8 @@ fun SettingsScreen(
     val currentVersionName = remember {
         runCatching {
             val info = context.packageManager.getPackageInfo(context.packageName, 0)
-            info.versionName ?: "1.4.0"
-        }.getOrDefault("1.4.0")
+            info.versionName ?: "1.4.1"
+        }.getOrDefault("1.4.1")
     }
     
     // Token threshold slider state
@@ -1212,12 +1212,12 @@ fun SettingsScreen(
                     
                     // Send log button
                     Button(
-                        onClick = { sendLogByEmail(context) },
+                        onClick = { sendLogByShare(context) },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Default.Send, contentDescription = null)
+                        Icon(Icons.Default.Share, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Enviar registros por correo")
+                        Text("Compartir registros")
                     }
                 }
             }
@@ -1500,7 +1500,7 @@ private fun ParameterSlider(
     }
 }
 
-private fun sendLogByEmail(context: Context) {
+private fun sendLogByShare(context: Context) {
     try {
         val logFilePath = AppLogger.getLogFilePath() ?: run {
             Toast.makeText(context, "No se encontró el archivo de log", Toast.LENGTH_SHORT).show()
@@ -1509,13 +1509,12 @@ private fun sendLogByEmail(context: Context) {
         val logFile = File(logFilePath)
         
         if (!logFile.exists() || logFile.length() == 0L) {
-            Toast.makeText(context, "No hay registros para enviar", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "No hay registros para compartir", Toast.LENGTH_SHORT).show()
             return
         }
         
         val maxSizeBytes = 3 * 1024 * 1024 // 3 MB
         val logContent: File
-        val subject: String
         
         if (logFile.length() > maxSizeBytes) {
             // If log is too large, take last 200 lines
@@ -1524,10 +1523,8 @@ private fun sendLogByEmail(context: Context) {
             val tempFile = File(context.cacheDir, "app_log_last_200_lines.txt")
             tempFile.writeText(last200Lines.joinToString("\n"))
             logContent = tempFile
-            subject = "Log Asistente IA Local - Últimas 200 líneas"
         } else {
             logContent = logFile
-            subject = "Log Asistente IA Local"
         }
         
         val versionName = try {
@@ -1536,14 +1533,14 @@ private fun sendLogByEmail(context: Context) {
             "desconocida"
         }
         
-        val body = """
+        val shareText = """
             App: Asistente IA Local
             Versión: $versionName
             Dispositivo: ${Build.MANUFACTURER} ${Build.MODEL}
             Android: ${Build.VERSION.RELEASE}
             
             ---
-            Este correo contiene los registros (logs) de la aplicación para diagnóstico de problemas.
+            Este mensaje contiene los registros (logs) de la aplicación para diagnóstico de problemas.
             NO se incluye ningún dato personal, conversación ni historial de chats.
         """.trimIndent()
         
@@ -1553,22 +1550,17 @@ private fun sendLogByEmail(context: Context) {
             logContent
         )
         
-        val emailIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "message/rfc822"
-            putExtra(Intent.EXTRA_EMAIL, arrayOf("dnklabsautomatizaciones@gmail.com"))
-            putExtra(Intent.EXTRA_SUBJECT, subject)
-            putExtra(Intent.EXTRA_TEXT, body)
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, shareText)
             putExtra(Intent.EXTRA_STREAM, uri)
+            putExtra(Intent.EXTRA_SUBJECT, "Log Asistente IA Local - v$versionName")
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         
-        try {
-            context.startActivity(Intent.createChooser(emailIntent, "Enviar correo con..."))
-        } catch (e: Exception) {
-            Toast.makeText(context, "No hay aplicación de correo instalada", Toast.LENGTH_SHORT).show()
-        }
+        context.startActivity(Intent.createChooser(shareIntent, "Compartir log con..."))
     } catch (e: Exception) {
-        Log.e("SettingsScreen", "Error sending log", e)
-        Toast.makeText(context, "Error al preparar el correo: ${e.message}", Toast.LENGTH_LONG).show()
+        Log.e("SettingsScreen", "Error sharing log", e)
+        Toast.makeText(context, "Error al preparar el archivo: ${e.message}", Toast.LENGTH_LONG).show()
     }
 }
