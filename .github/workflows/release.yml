@@ -47,6 +47,13 @@ jobs:
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > DNKLabs.jks
           
+      - name: Fetch llama.cpp sources
+        run: |
+          if [ ! -d "app/src/main/cpp/llama.cpp" ]; then
+            git clone https://github.com/ggerganov/llama.cpp app/src/main/cpp/llama.cpp
+            git -C app/src/main/cpp/llama.cpp checkout dddca026bf64ae312cc8b5144ce2fc0e1d0a51e4
+          fi
+
       - name: Ensure gradlew is executable
         run: chmod +x ./gradlew
 
