@@ -58,8 +58,8 @@ fun SettingsScreen(
     val currentVersionName = remember {
         runCatching {
             val info = context.packageManager.getPackageInfo(context.packageName, 0)
-            info.versionName ?: "1.3.7"
-        }.getOrDefault("1.3.7")
+            info.versionName ?: "1.3.8"
+        }.getOrDefault("1.3.8")
     }
     
     // Token threshold slider state

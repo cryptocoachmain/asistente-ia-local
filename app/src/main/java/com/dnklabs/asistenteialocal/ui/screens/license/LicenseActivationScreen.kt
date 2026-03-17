@@ -6,7 +6,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -69,7 +68,7 @@ fun LicenseActivationScreen(
                 
                 // Título
                 Text(
-                    text = "Activación Required",
+                    text = "Activación Requerida",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
@@ -157,36 +156,7 @@ fun LicenseActivationScreen(
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                // Ayuda
-                HorizontalDivider()
-                
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                Text(
-                    text = "Contraseñas válidas:",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                Surface(
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = MaterialTheme.shapes.small
-                ) {
-                    Column(
-                        modifier = Modifier.padding(12.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text("mañolandia", style = MaterialTheme.typography.bodyMedium)
-                        Text("DNKLABS", style = MaterialTheme.typography.bodyMedium)
-                        Text("dnklabsautomatizaciones", style = MaterialTheme.typography.bodyMedium)
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
                 
                 // Contacto
                 Text(

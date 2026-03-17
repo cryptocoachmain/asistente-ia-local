@@ -23,9 +23,10 @@ class LicenseManager(context: Context) {
         private const val KEY_FIRST_USE_DATE = "first_use_date"
         private const val KEY_INSTALLATION_ID = "installation_id"
         private const val KEY_LICENSE_KEY = "license_key"
+        private const val KEY_VIDEO_SHOWN = "video_shown"
         
-        // Contraseñas válidas
-        private val VALID_KEYS = setOf("mañolandia", "DNKLABS", "dnklabsautomatizaciones")
+        // Contraseñas válidas (se comparan en minúsculas)
+        private val VALID_KEYS = setOf("mañolandia", "dnklabs", "dnklabsautomatizaciones")
         
         // Fecha de expiry como timestamp
         private val EXPIRY_DATE: Date by lazy {
@@ -75,6 +76,20 @@ class LicenseManager(context: Context) {
      */
     fun getSavedLicenseKey(): String? {
         return prefs.getString(KEY_LICENSE_KEY, null)
+    }
+    
+    /**
+     * Verifica si el video de bienvenida ya se ha mostrado
+     */
+    fun isVideoShown(): Boolean {
+        return prefs.getBoolean(KEY_VIDEO_SHOWN, false)
+    }
+    
+    /**
+     * Marca el video de bienvenida como mostrado
+     */
+    fun setVideoShown() {
+        prefs.edit().putBoolean(KEY_VIDEO_SHOWN, true).apply()
     }
     
     /**

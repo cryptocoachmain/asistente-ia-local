@@ -503,7 +503,7 @@ fun ChatScreen(
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Text(
-                                text = "100% Offline • v1.3.7",
+                                text = "100% Offline • v1.3.8",
                                 style = MaterialTheme.typography.bodySmall,
                                 fontSize = 10.sp,
                                 color = LocalPrivacyGreen

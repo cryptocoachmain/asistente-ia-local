@@ -16,12 +16,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.dnklabs.asistenteialocal.R
+import com.dnklabs.asistenteialocal.data.local.LicenseManager
 
 @Composable
 fun WelcomeVideoScreen(
     onVideoFinished: () -> Unit
 ) {
     val context = LocalContext.current
+    val licenseManager = remember { LicenseManager(context) }
     val videoUri = remember {
         Uri.parse("android.resource://${context.packageName}/${R.raw.dnkwelcome}")
     }
@@ -34,6 +36,7 @@ fun WelcomeVideoScreen(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) {
+                licenseManager.setVideoShown()
                 onVideoFinished()
             },
         contentAlignment = Alignment.Center
@@ -43,9 +46,11 @@ fun WelcomeVideoScreen(
                 VideoView(ctx).apply {
                     setVideoURI(videoUri)
                     setOnCompletionListener {
+                        licenseManager.setVideoShown()
                         onVideoFinished()
                     }
                     setOnErrorListener { _, _, _ ->
+                        licenseManager.setVideoShown()
                         onVideoFinished() // Skip on error
                         true
                     }

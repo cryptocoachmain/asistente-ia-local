@@ -67,13 +67,17 @@ fun AppNavigation(
     
     // Verificar si necesita activación de licencia
     val needsLicenseActivation = licenseManager?.let { !it.hasLicenseKey() } ?: false
+    val videoShown = licenseManager?.isVideoShown() ?: true
 
     // Determinar destino inicial basado en licencia
-    val startDestination = remember(isLicenseValid, needsLicenseActivation) {
+    val startDestination = remember(isLicenseValid, needsLicenseActivation, videoShown) {
         when {
             !isLicenseValid -> Screen.LicenseExpired.route
             needsLicenseActivation -> Screen.LicenseActivation.route
-            else -> Screen.Splash.route
+            !videoShown -> Screen.Splash.route
+            isFirstLaunch -> Screen.OnboardingWelcome.route
+            hasPin -> Screen.Lock.route
+            else -> Screen.Chat.route
         }
     }
 
