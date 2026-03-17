@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.dnklabs.asistenteialocal.ui.screens.chat.ChatScreen
 import com.dnklabs.asistenteialocal.ui.screens.history.HistoryScreen
 import com.dnklabs.asistenteialocal.ui.screens.license.LicenseExpiredScreen
+import com.dnklabs.asistenteialocal.ui.screens.license.LicenseActivationScreen
 import com.dnklabs.asistenteialocal.ui.screens.lock.LockScreen
 import com.dnklabs.asistenteialocal.ui.screens.ocr.OCRScreen
 import com.dnklabs.asistenteialocal.ui.screens.onboarding.ModelOption
@@ -46,6 +47,7 @@ sealed class Screen(val route: String) {
     object ChangeModel : Screen("change_model")
     object Splash : Screen("splash")
     object LicenseExpired : Screen("license_expired")
+    object LicenseActivation : Screen("license_activation")
 }
 
 @Composable
@@ -62,19 +64,23 @@ fun AppNavigation(
     freeSpaceGB: Float = 5.0f
 ) {
     var onboardingStep by remember { mutableStateOf(0) }
+    
+    // Verificar si necesita activación de licencia
+    val needsLicenseActivation = licenseManager?.let { !it.hasLicenseKey() } ?: false
 
     // Determinar destino inicial basado en licencia
-    val startDestination = remember(isLicenseValid) {
-        if (!isLicenseValid) {
-            Screen.LicenseExpired.route
-        } else {
-            Screen.Splash.route
+    val startDestination = remember(isLicenseValid, needsLicenseActivation) {
+        when {
+            !isLicenseValid -> Screen.LicenseExpired.route
+            needsLicenseActivation -> Screen.LicenseActivation.route
+            else -> Screen.Splash.route
         }
     }
 
-    val nextDestination = remember(hasPin, isFirstLaunch, isLicenseValid) {
+    val nextDestination = remember(hasPin, isFirstLaunch, isLicenseValid, needsLicenseActivation) {
         when {
             !isLicenseValid -> Screen.LicenseExpired.route
+            needsLicenseActivation -> Screen.LicenseActivation.route
             isFirstLaunch -> Screen.OnboardingWelcome.route
             hasPin -> Screen.Lock.route
             else -> Screen.Chat.route
@@ -94,6 +100,17 @@ fun AppNavigation(
                 },
                 onRetryCheck = {
                     // Re-intentar verificación
+                }
+            )
+        }
+        
+        // Pantalla de activación de licencia
+        composable(Screen.LicenseActivation.route) {
+            LicenseActivationScreen(
+                onLicenseActivated = {
+                    navController.navigate(Screen.Splash.route) {
+                        popUpTo(Screen.LicenseActivation.route) { inclusive = true }
+                    }
                 }
             )
         }

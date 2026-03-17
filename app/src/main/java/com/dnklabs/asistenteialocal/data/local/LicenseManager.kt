@@ -22,6 +22,10 @@ class LicenseManager(context: Context) {
         private const val PREFS_NAME = "license_prefs"
         private const val KEY_FIRST_USE_DATE = "first_use_date"
         private const val KEY_INSTALLATION_ID = "installation_id"
+        private const val KEY_LICENSE_KEY = "license_key"
+        
+        // Contraseñas válidas
+        private val VALID_KEYS = setOf("mañolandia", "DNKLABS", "dnklabsautomatizaciones")
         
         // Fecha de expiry como timestamp
         private val EXPIRY_DATE: Date by lazy {
@@ -38,6 +42,39 @@ class LicenseManager(context: Context) {
     fun isLicenseValid(): Boolean {
         val currentDate = Date()
         return currentDate.before(EXPIRY_DATE) || currentDate == EXPIRY_DATE
+    }
+    
+    /**
+     * Verifica si la contraseña introducida es válida
+     */
+    fun isValidKey(key: String): Boolean {
+        return key.trim().lowercase() in VALID_KEYS
+    }
+    
+    /**
+     * Guarda la licencia introducida
+     */
+    fun saveLicenseKey(key: String): Boolean {
+        if (!isValidKey(key)) return false
+        
+        val editor = prefs.edit()
+        editor.putString(KEY_LICENSE_KEY, key.trim())
+        editor.apply()
+        return true
+    }
+    
+    /**
+     * Verifica si ya se ha introducido una licencia
+     */
+    fun hasLicenseKey(): Boolean {
+        return prefs.contains(KEY_LICENSE_KEY)
+    }
+    
+    /**
+     * Obtiene la licencia guardada
+     */
+    fun getSavedLicenseKey(): String? {
+        return prefs.getString(KEY_LICENSE_KEY, null)
     }
     
     /**
@@ -117,7 +154,8 @@ class LicenseManager(context: Context) {
             isValid = isLicenseValid(),
             expiryDate = getExpiryDateFormatted(),
             daysRemaining = getDaysRemaining(),
-            firstUseRegistered = !isFirstUse()
+            firstUseRegistered = !isFirstUse(),
+            hasLicenseKey = hasLicenseKey()
         )
     }
 }
@@ -129,5 +167,6 @@ data class LicenseStatus(
     val isValid: Boolean,
     val expiryDate: String,
     val daysRemaining: Int,
-    val firstUseRegistered: Boolean
+    val firstUseRegistered: Boolean,
+    val hasLicenseKey: Boolean = false
 )
