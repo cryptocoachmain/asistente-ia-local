@@ -11,6 +11,7 @@ import android.os.Environment
 import android.os.PowerManager
 import android.app.ActivityManager
 import android.provider.Settings
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -28,6 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.core.content.FileProvider
+import java.io.File
+import java.io.FileInputStream
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -54,8 +58,8 @@ fun SettingsScreen(
     val currentVersionName = remember {
         runCatching {
             val info = context.packageManager.getPackageInfo(context.packageName, 0)
-            info.versionName ?: "1.3.6"
-        }.getOrDefault("1.3.6")
+            info.versionName ?: "1.3.7"
+        }.getOrDefault("1.3.7")
     }
     
     // Token threshold slider state
@@ -1172,6 +1176,49 @@ fun SettingsScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Borrar todos los registros")
                     }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    HorizontalDivider()
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Warning about sending logs
+                    Surface(
+                        color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.Top
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Los registros NO incluyen tus datos personales, conversaciones ni historial de chats. Solo se envía información técnica interna de la app para diagnosticar problemas.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                            )
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    // Send log button
+                    Button(
+                        onClick = { sendLogByEmail(context) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Default.Send, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Enviar registros por correo")
+                    }
                 }
             }
         }
@@ -1450,5 +1497,78 @@ private fun ParameterSlider(
                 )
             }
         }
+    }
+}
+
+private fun sendLogByEmail(context: Context) {
+    try {
+        val logFilePath = AppLogger.getLogFilePath() ?: run {
+            Toast.makeText(context, "No se encontró el archivo de log", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val logFile = File(logFilePath)
+        
+        if (!logFile.exists() || logFile.length() == 0L) {
+            Toast.makeText(context, "No hay registros para enviar", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
+        val maxSizeBytes = 3 * 1024 * 1024 // 3 MB
+        val logContent: File
+        val subject: String
+        
+        if (logFile.length() > maxSizeBytes) {
+            // If log is too large, take last 200 lines
+            val lines = logFile.readLines()
+            val last200Lines = lines.takeLast(200)
+            val tempFile = File(context.cacheDir, "app_log_last_200_lines.txt")
+            tempFile.writeText(last200Lines.joinToString("\n"))
+            logContent = tempFile
+            subject = "Log Asistente IA Local - Últimas 200 líneas"
+        } else {
+            logContent = logFile
+            subject = "Log Asistente IA Local"
+        }
+        
+        val versionName = try {
+            context.packageManager.getPackageInfo(context.packageName, 0).versionName
+        } catch (e: Exception) {
+            "desconocida"
+        }
+        
+        val body = """
+            App: Asistente IA Local
+            Versión: $versionName
+            Dispositivo: ${Build.MANUFACTURER} ${Build.MODEL}
+            Android: ${Build.VERSION.RELEASE}
+            
+            ---
+            Este correo contiene los registros (logs) de la aplicación para diagnóstico de problemas.
+            NO se incluye ningún dato personal, conversación ni historial de chats.
+        """.trimIndent()
+        
+        val uri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            logContent
+        )
+        
+        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:")
+            putExtra(Intent.EXTRA_EMAIL, arrayOf("dnklabsautomatizaciones@gmail.com"))
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_TEXT, body)
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        
+        if (emailIntent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(emailIntent)
+        } else {
+            Toast.makeText(context, "No hay aplicación de correo instalada", Toast.LENGTH_SHORT).show()
+        }
+    } catch (e: Exception) {
+        Log.e("SettingsScreen", "Error sending log", e)
+        Toast.makeText(context, "Error al preparar el correo: ${e.message}", Toast.LENGTH_LONG).show()
     }
 }
