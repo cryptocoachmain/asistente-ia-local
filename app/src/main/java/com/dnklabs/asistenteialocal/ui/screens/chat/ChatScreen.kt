@@ -503,7 +503,7 @@ fun ChatScreen(
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Text(
-                                text = "100% Offline • v1.3.4",
+                                text = "100% Offline • v1.3.5",
                                 style = MaterialTheme.typography.bodySmall,
                                 fontSize = 10.sp,
                                 color = LocalPrivacyGreen
@@ -857,6 +857,33 @@ fun ChatScreen(
                             lineHeight = 24.sp
                         )
                         
+                        // Model info
+                        if (selectedModel != null) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Surface(
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.ModelTraining,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        "Modelo: $selectedModel",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                }
+                            }
+                        }
+                        
                         // Model initialization status
                         Spacer(modifier = Modifier.height(24.dp))
                         when {
@@ -1013,7 +1040,7 @@ fun ChatScreen(
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Column {
-                                            Text("Pensando...", style = MaterialTheme.typography.bodyMedium)
+                                            Text("Generando respuesta...", style = MaterialTheme.typography.bodyMedium)
                                             if (userMessageCount > 1) {
                                                 Text(
                                                     "Puede tardar más al cargar el contexto del chat",
