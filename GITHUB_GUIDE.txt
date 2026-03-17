@@ -6,7 +6,7 @@
 ## Credenciales de Firma (Signing)
 - **Keystore**: DNKLabs.jks (en raíz del proyecto)
 - **Password**: DNK420dnk
-- **Alias**: dnkkey
+- **Alias**: dnklabs (segÃºn app/build.gradle.kts)
 - **Password del Alias**: DNK420dnk
 
 ## Crear Nueva Release (Paso a Paso)
@@ -20,7 +20,11 @@
 ```bash
 ./gradlew assembleRelease
 ```
-El APK se genera en: `release/AIlocal-1_X_Y.apk`
+El APK se genera en:
+- `app/build/outputs/apk/release/app-release.apk`
+
+Si se renombra manualmente:
+- `AILocal-X_Y_Z.apk` (en la raÃ­z si se copia, o en la carpeta release si la usas)
 
 ### 3. Hacer commit y push
 ```bash
@@ -55,7 +59,7 @@ curl -s -X POST "https://uploads.github.com/repos/cryptocoachmain/asistente-ia-l
 Para builds automáticos, agregar estos secrets en GitHub:
 - **KEYSTORE_BASE64**: Base64 del keystore (cat DNKLabs.jks | base64)
 - **KEYSTORE_PASSWORD**: DNK420dnk
-- **KEYSTORE_ALIAS**: dnkkey
+- **KEYSTORE_ALIAS**: dnklabs
 - **KEYSTORE_ALIAS_PASSWORD**: DNK420dnk
 - **GITHUB_TOKEN**: Se genera automáticamente
 
@@ -64,3 +68,15 @@ Para builds automáticos, agregar estos secrets en GitHub:
 - NO hacer commit de archivos grandes (.cxx/, build/, *.a, *.apk excepto en /release/)
 - El .gitignore ya está configurado para excluir estos archivos
 - El workflow de GitHub Actions ya está configurado en .github/workflows/release.yml
+
+
+## Notas CI (GitHub Actions)
+- Se fuerza Node.js 24 en el job (FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true).
+- Se descarga \llama.cpp\ en CI si no esta en el repo (commit fijo).
+- Se habilito \jniLibs.useLegacyPackaging = true\ por \ndroid:extractNativeLibs=true\.
+- Recursos requeridos para build: icons \mipmap/ic_launcher*.png\ y \es/raw/dnkwelcome.mp4\.
+- El keystore del repo se usa por defecto; el secret KEYSTORE_BASE64 solo se aplica si el archivo no existe.
+
+## Version actual
+- 1.3.4 (versionCode 1034)
+
