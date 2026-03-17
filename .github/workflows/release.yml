@@ -45,7 +45,11 @@ jobs:
           
       - name: Create keystore
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > DNKLabs.jks
+          if [ ! -f "DNKLabs.jks" ] && [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > DNKLabs.jks
+          else
+            echo "Using repo keystore (or no secret provided)."
+          fi
           
       - name: Fetch llama.cpp sources
         run: |
