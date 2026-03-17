@@ -31,6 +31,7 @@ compile_errors.txt
 
 # Images
 *.png
+!app/src/main/res/mipmap-*/ic_launcher*.png
 
 # Secrets (keep these local)
 keystore_password.txt
