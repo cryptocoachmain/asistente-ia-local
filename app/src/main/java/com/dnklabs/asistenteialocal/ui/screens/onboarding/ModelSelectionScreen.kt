@@ -42,6 +42,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -117,7 +118,11 @@ fun ModelSelectionScreen(
     var showDownloadDialog by remember { mutableStateOf(false) }
     var downloadProgress by remember { mutableFloatStateOf(0f) }
     var downloadStatus by remember { mutableStateOf<DownloadStatus>(DownloadStatus.Idle) }
+    var modelInstalled by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
+    
+    // Check if a model is already selected
+    val installedModel by modelPersistence.selectedModel.collectAsState()
     
     // Get device RAM info
     val activityManager = remember { context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager }
@@ -381,35 +386,65 @@ fun ModelSelectionScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Botón de descarga
-        Button(
-            onClick = {
-                selectedModel?.let {
-                    showDownloadDialog = true
-                    downloadStatus = DownloadStatus.Downloading
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            enabled = selectedModel != null,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
-            ),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Download,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Descargar e Instalar",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
-            )
+        // Botón de descarga o continuar
+        if (installedModel != null) {
+            // Ya hay un modelo instalado, mostrar botón de continuar
+            Button(
+                onClick = {
+                    // Ir al chat
+                    onDownloadAndInstall(selectedModel ?: ModelOption.QWEN_0_5B)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Continuar",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        } else {
+            // No hay modelo instalado, obligar a descargar
+            Button(
+                onClick = {
+                    selectedModel?.let {
+                        showDownloadDialog = true
+                        downloadStatus = DownloadStatus.Downloading
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                enabled = selectedModel != null,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Download,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (selectedModel != null) "Descargar e Instalar" else "Selecciona un modelo",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
         }
     }
 

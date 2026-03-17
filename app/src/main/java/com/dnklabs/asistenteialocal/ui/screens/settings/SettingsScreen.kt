@@ -58,8 +58,8 @@ fun SettingsScreen(
     val currentVersionName = remember {
         runCatching {
             val info = context.packageManager.getPackageInfo(context.packageName, 0)
-            info.versionName ?: "1.3.8"
-        }.getOrDefault("1.3.8")
+            info.versionName ?: "1.3.9"
+        }.getOrDefault("1.3.9")
     }
     
     // Token threshold slider state
@@ -1122,7 +1122,7 @@ fun SettingsScreen(
             ) {
                 ListItem(
                     headlineContent = { Text("Acerca de") },
-                    supportingContent = { Text("Versión 1.3.4 • Asistente IA Local") },
+                    supportingContent = { Text("Versión $currentVersionName • Asistente IA Local") },
                     leadingContent = {
                         Icon(Icons.Default.Info, contentDescription = null)
                     }
@@ -1553,8 +1553,8 @@ private fun sendLogByEmail(context: Context) {
             logContent
         )
         
-        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-            data = Uri.parse("mailto:")
+        val emailIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "message/rfc822"
             putExtra(Intent.EXTRA_EMAIL, arrayOf("dnklabsautomatizaciones@gmail.com"))
             putExtra(Intent.EXTRA_SUBJECT, subject)
             putExtra(Intent.EXTRA_TEXT, body)
@@ -1562,9 +1562,9 @@ private fun sendLogByEmail(context: Context) {
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         
-        if (emailIntent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(emailIntent)
-        } else {
+        try {
+            context.startActivity(Intent.createChooser(emailIntent, "Enviar correo con..."))
+        } catch (e: Exception) {
             Toast.makeText(context, "No hay aplicación de correo instalada", Toast.LENGTH_SHORT).show()
         }
     } catch (e: Exception) {
