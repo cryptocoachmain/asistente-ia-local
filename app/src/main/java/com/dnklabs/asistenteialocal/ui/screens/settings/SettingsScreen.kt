@@ -54,8 +54,8 @@ fun SettingsScreen(
     val currentVersionName = remember {
         runCatching {
             val info = context.packageManager.getPackageInfo(context.packageName, 0)
-            info.versionName ?: "1.3.3"
-        }.getOrDefault("1.3.3")
+            info.versionName ?: "1.3.4"
+        }.getOrDefault("1.3.4")
     }
     
     // Token threshold slider state
@@ -88,6 +88,8 @@ fun SettingsScreen(
     
     var showRamDialog by remember { mutableStateOf(false) }
     var isCleaningRam by remember { mutableStateOf(false) }
+    var showCloseAppsDialog by remember { mutableStateOf(false) }
+    var isClosingApps by remember { mutableStateOf(false) }
     var showClearLogDialog by remember { mutableStateOf(false) }
     
     Scaffold(
@@ -1075,6 +1077,35 @@ fun SettingsScreen(
                             Text("Ejecutar Limpieza Profunda")
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "Esta opciÃ³n cerrarÃ¡ aplicaciones en segundo plano del telÃ©fono para liberar mÃ¡s memoria antes de ejecutar el modelo.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    OutlinedButton(
+                        onClick = { showCloseAppsDialog = true },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !isClosingApps
+                    ) {
+                        if (isClosingApps) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(18.dp),
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Cerrando apps...")
+                        } else {
+                            Icon(Icons.Default.Close, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Cerrar apps en segundo plano")
+                        }
+                    }
                 }
             }
 
@@ -1087,7 +1118,7 @@ fun SettingsScreen(
             ) {
                 ListItem(
                     headlineContent = { Text("Acerca de") },
-                        supportingContent = { Text("Versión 1.3.1 • Asistente IA Local") },
+                    supportingContent = { Text("Versión 1.3.4 • Asistente IA Local") },
                     leadingContent = {
                         Icon(Icons.Default.Info, contentDescription = null)
                     }
@@ -1189,6 +1220,45 @@ fun SettingsScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showRamDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
+    if (showCloseAppsDialog) {
+        AlertDialog(
+            onDismissRequest = { showCloseAppsDialog = false },
+            title = { Text("¿Cerrar apps en segundo plano?") },
+            text = {
+                Text("Este botón cerrará procesos de otras aplicaciones que estén en segundo plano para liberar memoria y mejorar el rendimiento del modelo de IA.\n\nPuede interrumpir tareas de otras apps.")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showCloseAppsDialog = false
+                        isClosingApps = true
+                        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                            try {
+                                val runningProcesses = activityManager.runningAppProcesses
+                                runningProcesses?.forEach { process ->
+                                    if (process.processName != context.packageName) {
+                                        activityManager.killBackgroundProcesses(process.processName)
+                                    }
+                                }
+                            } catch (_: Exception) {
+                            }
+                            Toast.makeText(context, "Aplicaciones en segundo plano cerradas.", Toast.LENGTH_SHORT).show()
+                            isClosingApps = false
+                        }, 1200)
+                    }
+                ) {
+                    Text("Cerrar ahora")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showCloseAppsDialog = false }) {
                     Text("Cancelar")
                 }
             }
