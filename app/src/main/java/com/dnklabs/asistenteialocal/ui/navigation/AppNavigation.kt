@@ -112,14 +112,16 @@ fun AppNavigation(
         composable(Screen.LicenseActivation.route) {
             LicenseActivationScreen(
                 onLicenseActivated = {
-                    navController.navigate(Screen.Splash.route) {
+                    // Ir directamente al onboarding sin pasar por el video
+                    // ya que es la primera vez que se usa la app
+                    navController.navigate(Screen.OnboardingWelcome.route) {
                         popUpTo(Screen.LicenseActivation.route) { inclusive = true }
                     }
                 }
             )
         }
 
-        // Pantalla de video de bienvenida (Splash)
+        // Pantalla de video de bienvenida (Splash) - solo para usuarios que ya completaron onboarding
         composable(Screen.Splash.route) {
             WelcomeVideoScreen(
                 onVideoFinished = {
