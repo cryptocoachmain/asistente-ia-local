@@ -57,7 +57,7 @@ import com.dnklabs.asistenteialocal.ui.theme.LocalWarningOrange
 
 /**
  * Pantalla de configuración de PIN durante el onboarding
- * Permite crear PIN de 4-6 dígitos con confirmación
+ * Permite crear PIN de exactamente 4 dígitos con confirmación
  * Incluye aviso obligatorio sobre pérdida de PIN
  */
 @Composable
@@ -157,7 +157,7 @@ fun SetupPinScreen(
                 
                 Text(
                     text = when (step) {
-                        1 -> "Elige un PIN de 4 a 6 dígitos"
+                        1 -> "Elige un PIN de 4 dígitos"
                         2 -> "Vuelve a introducir tu PIN para confirmar"
                         else -> ""
                     },
@@ -173,7 +173,7 @@ fun SetupPinScreen(
             val currentPin = if (step == 2) confirmPin else pin
             PinIndicator(
                 pinLength = currentPin.length,
-                maxLength = 6,
+                maxLength = 4,
                 isError = errorMessage != null,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
@@ -201,7 +201,7 @@ fun SetupPinScreen(
                     currentLength = currentPin.length,
                     onDigitClick = { digit ->
                         errorMessage = null
-                        if (currentPin.length < 6) {
+                        if (currentPin.length < 4) {
                             if (step == 1) {
                                 pin += digit
                             } else {
@@ -226,8 +226,8 @@ fun SetupPinScreen(
                     onClick = {
                         when (step) {
                             1 -> {
-                                if (pin.length < 4) {
-                                    errorMessage = "El PIN debe tener al menos 4 dígitos"
+                                if (pin.length != 4) {
+                                    errorMessage = "El PIN debe tener exactamente 4 dígitos"
                                 } else {
                                     step = 2
                                     errorMessage = null
@@ -253,8 +253,8 @@ fun SetupPinScreen(
                         .fillMaxWidth()
                         .height(56.dp),
                     enabled = when (step) {
-                        1 -> pin.length >= 4
-                        2 -> confirmPin.length == pin.length
+                        1 -> pin.length == 4
+                        2 -> confirmPin.length == 4
                         else -> false
                     },
                     shape = RoundedCornerShape(12.dp)
@@ -419,7 +419,7 @@ private fun NumericKeypad(
                     KeypadButton(
                         text = digit,
                         onClick = { onDigitClick(digit) },
-                        enabled = currentLength < 6,
+                        enabled = currentLength < 4,
                         modifier = Modifier.size(72.dp)
                     )
                 }
@@ -438,7 +438,7 @@ private fun NumericKeypad(
             KeypadButton(
                 text = "0",
                 onClick = { onDigitClick("0") },
-                enabled = currentLength < 6,
+                enabled = currentLength < 4,
                 modifier = Modifier.size(72.dp)
             )
             

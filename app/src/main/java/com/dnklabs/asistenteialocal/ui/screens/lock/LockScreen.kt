@@ -160,7 +160,7 @@ fun LockScreen(
             // Indicador de PIN
             PinIndicator(
                 pinLength = pin.length,
-                maxLength = 6,
+                maxLength = 4,
                 isError = errorMessage != null,
                 modifier = Modifier.padding(vertical = 32.dp)
             )
@@ -184,11 +184,11 @@ fun LockScreen(
             if (!isLockedOut) {
                 NumericKeypad(
                     onDigitClick = { digit ->
-                        if (pin.length < 6 && !isVerifying) {
+                        if (pin.length < 4 && !isVerifying) {
                             pin += digit
                             
                             // Auto-verificar cuando tiene 4 dígitos
-                            if (pin.length >= 4) {
+                            if (pin.length == 4) {
                                 isVerifying = true
                                 if (securityManager.verifyPin(pin)) {
                                     onPinCorrect()
