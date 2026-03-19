@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudOff
@@ -35,6 +37,8 @@ import androidx.compose.ui.unit.sp
 fun WelcomeScreen(
     onContinue: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
+    
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -50,14 +54,17 @@ fun WelcomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 32.dp),
+                .verticalScroll(scrollState)
+                .padding(horizontal = 32.dp, vertical = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Top
         ) {
+            Spacer(modifier = Modifier.height(32.dp))
+
             // Icono de la app
             Box(
                 modifier = Modifier
-                    .size(120.dp)
+                    .size(100.dp)
                     .background(
                         color = Color.White.copy(alpha = 0.2f),
                         shape = CircleShape
@@ -67,17 +74,17 @@ fun WelcomeScreen(
                 Icon(
                     imageVector = Icons.Default.CloudOff,
                     contentDescription = null,
-                    modifier = Modifier.size(64.dp),
+                    modifier = Modifier.size(56.dp),
                     tint = Color.White
                 )
             }
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Título
             Text(
                 text = "Asistente de IA Local",
-                fontSize = 32.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
                 textAlign = TextAlign.Center
@@ -88,17 +95,17 @@ fun WelcomeScreen(
             // Subtítulo
             Text(
                 text = "100% Offline • 100% Privado",
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 color = Color.White.copy(alpha = 0.9f),
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Puntos de privacidad
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 PrivacyPoint(
                     icon = Icons.Default.Security,
@@ -114,7 +121,7 @@ fun WelcomeScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(56.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             // Botón de continuar
             Button(
@@ -144,6 +151,8 @@ fun WelcomeScreen(
                 color = Color.White.copy(alpha = 0.7f),
                 textAlign = TextAlign.Center
             )
+            
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -162,13 +171,13 @@ private fun PrivacyPoint(
             imageVector = icon,
             contentDescription = null,
             tint = Color.White,
-            modifier = Modifier.size(28.dp)
+            modifier = Modifier.size(24.dp)
         )
         Text(
             text = text,
-            fontSize = 16.sp,
+            fontSize = 15.sp,
             color = Color.White,
-            modifier = Modifier.padding(start = 16.dp)
+            modifier = Modifier.padding(start = 14.dp)
         )
     }
 }

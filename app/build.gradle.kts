@@ -13,8 +13,8 @@ android {
         applicationId = "com.dnklabs.asistenteialocal"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1042
-        versionName = "1.4.2"
+        versionCode = 1043
+        versionName = "1.4.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
