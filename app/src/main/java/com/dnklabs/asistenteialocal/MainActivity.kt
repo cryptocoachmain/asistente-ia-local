@@ -56,6 +56,9 @@ class MainActivity : ComponentActivity() {
             ModelOption.QWEN_0_5B -> LlamaCppRepository.MODEL_QWEN_0_5B
             ModelOption.QWEN_1_5B -> LlamaCppRepository.MODEL_QWEN_1_5B
             ModelOption.QWEN_3B -> LlamaCppRepository.MODEL_QWEN_3B
+            ModelOption.QWEN35_0_8B -> LlamaCppRepository.MODEL_QWEN35_0_8B
+            ModelOption.QWEN35_2B -> LlamaCppRepository.MODEL_QWEN35_2B
+            ModelOption.QWEN35_4B -> LlamaCppRepository.MODEL_QWEN35_4B
             ModelOption.LLAMA_3_2_3B -> LlamaCppRepository.MODEL_LLAMA_3_2_3B
             ModelOption.GEMMA_2B -> LlamaCppRepository.MODEL_GEMMA_2B
             ModelOption.PHI_3_MINI -> LlamaCppRepository.MODEL_PHI_3_MINI

@@ -40,6 +40,11 @@ companion object {
         const val MODEL_LLAMA_3_8B = "Meta-Llama-3-8B-Instruct-Q4_K_M.gguf"
         const val MODEL_LLAMA_3_2_3B = "Llama-3.2-3B-Instruct-Q4_K_M.gguf"
         
+        // === QWEN 3.5 MODELS (Marzo 2026) - bartowski ===
+        const val MODEL_QWEN35_0_8B = "Qwen_Qwen3.5-0.8B-Q4_K_M.gguf"
+        const val MODEL_QWEN35_2B = "Qwen_Qwen3.5-2B-Q4_K_M.gguf"
+        const val MODEL_QWEN35_4B = "Qwen_Qwen3.5-4B-Q4_K_M.gguf"
+        
         // URLs de descarga (Hugging Face)
         private val MODEL_URLS = mapOf(
             MODEL_QWEN_0_5B to "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf",
@@ -49,7 +54,11 @@ companion object {
             MODEL_PHI_3_MINI to "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf/resolve/main/Phi-3-mini-4k-instruct-q4.gguf",
             MODEL_MISTRAL_7B to "https://huggingface.co/bartowski/Mistral-7B-Instruct-v0.3-GGUF/resolve/main/Mistral-7B-Instruct-v0.3-Q4_K_M.gguf",
             MODEL_LLAMA_3_8B to "https://huggingface.co/bartowski/Meta-Llama-3-8B-Instruct-GGUF/resolve/main/Meta-Llama-3-8B-Instruct-Q4_K_M.gguf",
-            MODEL_LLAMA_3_2_3B to "https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF/resolve/main/Llama-3.2-3B-Instruct-Q4_K_M.gguf"
+            MODEL_LLAMA_3_2_3B to "https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF/resolve/main/Llama-3.2-3B-Instruct-Q4_K_M.gguf",
+            // Qwen 3.5 - bartowski (Marzo 2026)
+            MODEL_QWEN35_0_8B to "https://huggingface.co/bartowski/Qwen_Qwen3.5-0.8B-GGUF/resolve/main/Qwen_Qwen3.5-0.8B-Q4_K_M.gguf?download=true",
+            MODEL_QWEN35_2B to "https://huggingface.co/bartowski/Qwen_Qwen3.5-2B-GGUF/resolve/main/Qwen_Qwen3.5-2B-Q4_K_M.gguf?download=true",
+            MODEL_QWEN35_4B to "https://huggingface.co/bartowski/Qwen_Qwen3.5-4B-GGUF/resolve/main/Qwen_Qwen3.5-4B-Q4_K_M.gguf?download=true"
         )
         
         // Tamaños aproximados en bytes
@@ -61,7 +70,11 @@ companion object {
             MODEL_PHI_3_MINI to 2_390_000_000L,
             MODEL_MISTRAL_7B to 4_370_000_000L,
             MODEL_LLAMA_3_8B to 4_920_000_000L,
-            MODEL_LLAMA_3_2_3B to 1_950_000_000L
+            MODEL_LLAMA_3_2_3B to 1_950_000_000L,
+            // Qwen 3.5 - bartowski (Marzo 2026)
+            MODEL_QWEN35_0_8B to 580_000_000L,
+            MODEL_QWEN35_2B to 1_400_000_000L,
+            MODEL_QWEN35_4B to 2_800_000_000L
         )
         
         // Nombres legibles
@@ -73,7 +86,11 @@ companion object {
             MODEL_PHI_3_MINI to "Phi-3 Mini 4K (Microsoft)",
             MODEL_MISTRAL_7B to "Mistral 7B v0.3",
             MODEL_LLAMA_3_8B to "Llama 3 8B (Meta)",
-            MODEL_LLAMA_3_2_3B to "Llama 3.2 3B (Potente Meta)"
+            MODEL_LLAMA_3_2_3B to "Llama 3.2 3B (Potente Meta)",
+            // Qwen 3.5 (Marzo 2026)
+            MODEL_QWEN35_0_8B to "Qwen3.5 0.8B (Ultra Rápido)",
+            MODEL_QWEN35_2B to "Qwen3.5 2B (Equilibrado)",
+            MODEL_QWEN35_4B to "Qwen3.5 4B (Máxima Calidad)"
         )
     }
     
@@ -185,6 +202,34 @@ companion object {
                 isInstalled = isModelInstalled(MODEL_LLAMA_3_8B),
                 description = "Solo gama alta (16GB RAM mín). El estándar de oro actual. Excelente comprensión.",
                 performance = "Referencia"
+            ),
+            // === QWEN 3.5 MODELS (Marzo 2026) - bartowski ===
+            ModelInfo(
+                id = MODEL_QWEN35_0_8B,
+                name = MODEL_DISPLAY_NAMES[MODEL_QWEN35_0_8B] ?: MODEL_QWEN35_0_8B,
+                size = MODEL_SIZES[MODEL_QWEN35_0_8B] ?: 0,
+                ramRequiredMB = 700,
+                isInstalled = isModelInstalled(MODEL_QWEN35_0_8B),
+                description = "⭐ NUEVO: Qwen3.5 ultra rápido. Mejora respecto a Qwen 2.5 con mejor razonamiento.",
+                performance = "Buena"
+            ),
+            ModelInfo(
+                id = MODEL_QWEN35_2B,
+                name = MODEL_DISPLAY_NAMES[MODEL_QWEN35_2B] ?: MODEL_QWEN35_2B,
+                size = MODEL_SIZES[MODEL_QWEN35_2B] ?: 0,
+                ramRequiredMB = 1500,
+                isInstalled = isModelInstalled(MODEL_QWEN35_2B),
+                description = "⭐ NUEVO: Qwen3.5 equilibrado. Excelente para uso diario con gran mejora en español.",
+                performance = "Muy Alta"
+            ),
+            ModelInfo(
+                id = MODEL_QWEN35_4B,
+                name = MODEL_DISPLAY_NAMES[MODEL_QWEN35_4B] ?: MODEL_QWEN35_4B,
+                size = MODEL_SIZES[MODEL_QWEN35_4B] ?: 0,
+                ramRequiredMB = 2800,
+                isInstalled = isModelInstalled(MODEL_QWEN35_4B),
+                description = "⭐ NUEVO: Qwen3.5 máxima calidad. El mejor Qwen hasta la fecha. Gran razonamiento.",
+                performance = "Excelente"
             )
         )
     }
@@ -480,8 +525,31 @@ companion object {
             model.contains("llama-3") -> formatLlama3Prompt(prompt, history, limitHint)
             model.contains("gemma") -> formatGemmaPrompt(prompt, history, limitHint)
             model.contains("mistral") -> formatMistralPrompt(prompt, history, limitHint)
-            else -> formatChatMLPrompt(prompt, history, limitHint) // Qwen and others using ChatML
+            model.contains("qwen3.5") || model.contains("qwen_3.5") -> formatQwen35Prompt(prompt, history, limitHint)
+            else -> formatChatMLPrompt(prompt, history, limitHint) // Qwen 2.5 and others using ChatML
         }
+    }
+    
+    // === QWEN 3.5 PROMPT FORMAT (Marzo 2026) ===
+    private fun formatQwen35Prompt(
+        prompt: String,
+        history: List<HistoryMessage>,
+        limitHint: String
+    ): String {
+        val sb = StringBuilder()
+        sb.append("<|im_start|>system\n")
+        sb.append("You are a helpful assistant. Responde SIEMPRE en ESPAÑOL. ")
+        if (limitHint.isNotBlank()) sb.append(limitHint).append(" ")
+        sb.append("<|im_end|>\n")
+
+        for (msg in history) {
+            val role = if (msg.role == "user") "user" else "assistant"
+            sb.append("<|im_start|>$role\n${msg.content}<|im_end|>\n")
+        }
+
+        sb.append("<|im_start|>user\n$prompt<|im_end|>\n")
+        sb.append("<|im_start|>assistant\n")
+        return sb.toString()
     }
 
     private fun formatChatMLPrompt(

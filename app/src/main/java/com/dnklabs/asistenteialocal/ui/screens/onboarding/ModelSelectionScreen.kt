@@ -65,6 +65,9 @@ enum class ModelOption {
     QWEN_0_5B,
     QWEN_1_5B,
     QWEN_3B,
+    QWEN35_0_8B,
+    QWEN35_2B,
+    QWEN35_4B,
     LLAMA_3_2_3B,
     GEMMA_2B,
     PHI_3_MINI,
@@ -96,9 +99,12 @@ fun ModelOption.toModelFileName(): String {
     return when (this) {
         ModelOption.QWEN_0_5B -> com.dnklabs.asistenteialocal.data.repository.LlamaCppRepository.MODEL_QWEN_0_5B
         ModelOption.QWEN_1_5B -> com.dnklabs.asistenteialocal.data.repository.LlamaCppRepository.MODEL_QWEN_1_5B
-        ModelOption.GEMMA_2B -> com.dnklabs.asistenteialocal.data.repository.LlamaCppRepository.MODEL_GEMMA_2B
         ModelOption.QWEN_3B -> com.dnklabs.asistenteialocal.data.repository.LlamaCppRepository.MODEL_QWEN_3B
-        ModelOption.LLAMA_3_2_3B -> "Llama-3.2-3B-Instruct-Q4_K_M.gguf"
+        ModelOption.QWEN35_0_8B -> com.dnklabs.asistenteialocal.data.repository.LlamaCppRepository.MODEL_QWEN35_0_8B
+        ModelOption.QWEN35_2B -> com.dnklabs.asistenteialocal.data.repository.LlamaCppRepository.MODEL_QWEN35_2B
+        ModelOption.QWEN35_4B -> com.dnklabs.asistenteialocal.data.repository.LlamaCppRepository.MODEL_QWEN35_4B
+        ModelOption.GEMMA_2B -> com.dnklabs.asistenteialocal.data.repository.LlamaCppRepository.MODEL_GEMMA_2B
+        ModelOption.LLAMA_3_2_3B -> com.dnklabs.asistenteialocal.data.repository.LlamaCppRepository.MODEL_LLAMA_3_2_3B
         ModelOption.PHI_3_MINI -> com.dnklabs.asistenteialocal.data.repository.LlamaCppRepository.MODEL_PHI_3_MINI
         ModelOption.MISTRAL_7B -> com.dnklabs.asistenteialocal.data.repository.LlamaCppRepository.MODEL_MISTRAL_7B
         ModelOption.LLAMA_3_8B -> com.dnklabs.asistenteialocal.data.repository.LlamaCppRepository.MODEL_LLAMA_3_8B
@@ -160,13 +166,40 @@ fun ModelSelectionScreen(
             description = "Extremadamente rápido. Ideal si buscas velocidad por encima de la profundidad técnica."
         ),
         ModelOption.QWEN_3B to ModelInfo(
-            name = "Qwen 3B",
+            name = "Qwen 2.5 3B",
             sizeMB = 1843,
             size = "1.8 GB",
             ramRequiredMB = 2000,
             speed = "Moderada",
             accuracy = "Alta",
             description = "Máxima precisión para respuestas detalladas"
+        ),
+        ModelOption.QWEN35_0_8B to ModelInfo(
+            name = "Qwen3.5 0.8B (Nuevo!)",
+            sizeMB = 560,
+            size = "560 MB",
+            ramRequiredMB = 600,
+            speed = "Ultra rápida",
+            accuracy = "Buena",
+            description = "🌟 NUEVO! El más rápido. Último modelo de Alibaba con 120K contexto."
+        ),
+        ModelOption.QWEN35_2B to ModelInfo(
+            name = "Qwen3.5 2B (Nuevo!)",
+            sizeMB = 1350,
+            size = "1.35 GB",
+            ramRequiredMB = 1500,
+            speed = "Muy rápida",
+            accuracy = "Muy Alta",
+            description = "🌟 NUEVO! Excelente equilibrio. Último modelo de Alibaba con 120K contexto."
+        ),
+        ModelOption.QWEN35_4B to ModelInfo(
+            name = "Qwen3.5 4B (Nuevo!)",
+            sizeMB = 2700,
+            size = "2.7 GB",
+            ramRequiredMB = 3000,
+            speed = "Rápida",
+            accuracy = "Excelente",
+            description = "🌟 NUEVO! El mejor de su tamaño. Último modelo de Alibaba con 120K contexto."
         ),
         ModelOption.PHI_3_MINI to ModelInfo(
             name = "Phi-3 Mini 4K (Microsoft)",
