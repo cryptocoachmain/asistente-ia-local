@@ -16,7 +16,7 @@ class LicenseManager(context: Context) {
 
     companion object {
         // Fecha de vencimiento: 30 de abril de 2026
-        private const val EXPIRY_DATE_STRING = "30/04/2026"
+        private const val EXPIRY_DATE_STRING = "30/09/2026"
         private const val DATE_FORMAT = "dd/MM/yyyy"
         
         private const val PREFS_NAME = "license_prefs"
