@@ -26,7 +26,7 @@ class LicenseManager(context: Context) {
         private const val KEY_VIDEO_SHOWN = "video_shown"
         
         // Contraseñas válidas (se comparan en minúsculas)
-        private val VALID_KEYS = setOf("mañolandia", "dnklabs", "dnklabsautomatizaciones")
+        private val VALID_KEYS = setOf("mañolandia5o", "dnklabs", "dnklabsautomatizaciones")
         
         // Fecha de expiry como timestamp
         private val EXPIRY_DATE: Date by lazy {
